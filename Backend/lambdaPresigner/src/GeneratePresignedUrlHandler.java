@@ -1,4 +1,3 @@
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
@@ -17,10 +16,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GeneratePresignedUrlHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
-    private final String BUCKET_NAME = "dnd-character-raw-1";
+    private final String BUCKET_NAME = System.getenv("BUCKET_NAME");
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
+        if (BUCKET_NAME == null || BUCKET_NAME.isEmpty()) {
+        throw new RuntimeException("BUCKET_NAME environment variable is not set");
+        }
 
         // Set File Name in S3 to match Ingested PDF Name
         String originalFileName = (String) input.get("fileName");
